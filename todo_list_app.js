@@ -1,17 +1,12 @@
 const express = require('express');
 const session = require('express-session');
+const bodyParser = require('body-parser');
 
 const app = express();
-
-function checkSessionTodo(req) {
-	if ((typeof (req.session.todoList) === 'undefined')
-	|| (!(req.session.todoList instanceof Array))) {
-		req.session.todoList = [];
-	}
-}
-
+/**********/
+/** USES **/
+/**********/
 app.set('trust proxy', 1);
-
 app.use(session({
 	secret: 'bordel de merde',
 	resave: false,
@@ -26,12 +21,15 @@ app.use(session({
 	}
 }));
 
-app.get('/', (req, res) => {
-	//if first connection
-	checkSessionTodo(req);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-	//test
-	req.session.todoList = ['manger', 'dormir', 'faire caca'];
+
+/***************************/
+/** GET & POST management **/
+/***************************/
+app.get('/', (req, res) => {
+	checkSessionTodo(req);
 
 	res.status(200).setHeader('Content-Type', 'text/html');
 	res.render('index.ejs', {todoList: req.session.todoList});
@@ -41,8 +39,9 @@ app.get('/', (req, res) => {
 	res.send('Ajouter une todo');
 })
 .post('/addTodo', (req, res) => {
-	//checkSessionTodo(req);
-	res.send(req.session.todoList);
+	checkSessionTodo(req);
+	req.session.todoList.push(req.body.todo_input.substring(0,80));
+	res.status(200).redirect('/');
 
 })
 .get('/delTodo', (req, res) => {
@@ -56,3 +55,14 @@ app.get('/', (req, res) => {
 
 app.listen(8080);
 
+
+
+/**************/
+/* FUNCTIONS **/
+/**************/
+function checkSessionTodo(req) {
+	if ((typeof (req.session.todoList) === 'undefined')
+	|| (!(req.session.todoList instanceof Array))) {
+		req.session.todoList = [];
+	}
+}

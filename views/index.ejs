@@ -26,6 +26,15 @@
   li:last-child {
 	border-bottom: black 1px solid;
   }
+
+  form {
+	display: flex;
+	justify-content: space-between;
+  }
+
+  input#add_entry_input {
+	width: 100%;
+  }
   </style>
  </head>
  <body>
@@ -35,11 +44,11 @@
   <section id="todo_list">
    <ul>
 <% for (let i = 0; i < todoList.length; i++) { %>
-   <li><%= todoList[i] %><button>X</button><button>M</button></li>
+   <li><%= todoList[i] %><button id="del_<%= i %>" title="Supprimer">X</button><button id="mod_<%= i %>"title="Modifier">M</button></li>
 <% }  %>
    </ul>
    <form method="post" action="/addTodo">
-    <input type="text" name="todo_input" id="add_entry_input" placeholder="Ajouter une tâche" /><input type="submit" id="add_entry_button" value="Valider" />
+    <input type="text" name="todo_input" id="add_entry_input" placeholder="Ajouter une tâche (80 caractères maximum)" maxlength="80"/i><input type="submit" id="add_entry_button" value="Valider" />
    </form>
   </section>
   <script>

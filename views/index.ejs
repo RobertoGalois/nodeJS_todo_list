@@ -10,6 +10,10 @@
 	  font-size: 1.2em;
   }
 
+  ul {
+	list-style-type: square;
+  }
+
   ul button {
 	float: right;
   }
@@ -17,7 +21,6 @@
   li {
 	height: 2em;
 	border-top: black 1px solid;
-	overflow: auto;
   }
 
   li:last-child {
@@ -31,20 +34,19 @@
   </header>
   <section id="todo_list">
    <ul>
-    <li>Faire les courses<button>X</button><button>M</button></li>
-    <li>Nourrir le chat<button>X</button><button>M</button></li>
-    <li>Arroser les plantes<button>X</button><button>M</button></li>
-    <li>Lire la suite des tutos de Camille<button>X</button><button>M</button></li>
+<% for (let i = 0; i < todoList.length; i++) { %>
+   <li><%= todoList[i] %><button>X</button><button>M</button></li>
+<% }  %>
    </ul>
-   <form>
-    <input type="text" id="add_entry_input" placeholder="Ajouter une tâche" /><input type="submit" id="add_entry_button" value="Valider" />
+   <form method="post" action="/addTodo">
+    <input type="text" name="todo_input" id="add_entry_input" placeholder="Ajouter une tâche" /><input type="submit" id="add_entry_button" value="Valider" />
    </form>
   </section>
   <script>
    window.document.querySelector('#add_entry_input').focus();
    window.document.querySelector('form').addEventListener('submit', function (e) {
-		e.preventDefault();
-		console.log('ok');
+		//e.preventDefault();
+		//console.log('ok');
    });
   </script>
  </body>

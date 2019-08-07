@@ -44,7 +44,7 @@
   <section id="todo_list">
    <ul>
 <% for (let i = 0; i < todoList.length; i++) { %>
-   <li><%= todoList[i] %><button id="del_<%= i %>" title="Supprimer">X</button><button id="mod_<%= i %>"title="Modifier">M</button></li>
+   <li><%= todoList[i] %><button class="del_button" id="del_<%= i %>" title="Supprimer">X</button><button class="mod_button" id="mod_<%= i %>" title="Modifier">M</button></li>
 <% }  %>
    </ul>
    <form method="post" action="/addTodo">
@@ -57,6 +57,14 @@
 		//e.preventDefault();
 		//console.log('ok');
    });
+
+	var buttons = window.document.querySelectorAll("button.del_button");
+	for (let i = 0; i < buttons.length; i++) {
+		buttons[i].addEventListener('click', function (e) {
+			window.location.replace('/delTodo/' + e.currentTarget.id.slice(4));
+		});
+	}
+
   </script>
  </body>
 </html>

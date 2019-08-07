@@ -1,2 +1,2 @@
-const test = {};
-console.log(test instanceof Array);
+const test = "pouet";
+console.log(typeof(test) == 'string');

@@ -40,14 +40,25 @@ app.get('/', (req, res) => {
 })
 .post('/addTodo', (req, res) => {
 	checkSessionTodo(req);
-	req.session.todoList.push(req.body.todo_input.substring(0,80));
+	if ((typeof (req.body.todo_input) == 'string')
+		&& (req.body.todo_input !== '')){
+		req.session.todoList.push(req.body.todo_input.substring(0,80));
+	}
+
 	res.status(200).redirect('/');
 
 })
-.get('/delTodo', (req, res) => {
+.get('/delTodo/:id', (req, res) => {
+	checkSessionTodo(req);
 	res.status(200).setHeader('Content-Type', 'text/html');
-	res.send('supprimer une todo');
 
+	//check if id is a correct value
+	if ((Number.isInteger(parseInt(req.params.id)))
+		&& (req.params.id < req.session.todoList.length)) {
+		req.session.todoList.splice(req.params.id, 1);
+	}
+
+	res.redirect('/');
 })
 .use((req, res) => {
 	res.status(301).redirect('/');

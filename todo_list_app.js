@@ -25,19 +25,21 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-/***************************/
-/** GET & POST management **/
-/***************************/
+/**********************/
+/** ROUTE management **/
+/*********************/
+
+/*****/
+/* / */
+/*****/
 app.get('/', (req, res) => {
 	checkSessionTodo(req);
-
 	res.status(200).setHeader('Content-Type', 'text/html');
 	res.render('index.ejs', {todoList: req.session.todoList});
 })
-.get('/addTodo', (req, res) => {
-	res.status(200).setHeader('Content-Type', 'text/html');
-	res.send('Ajouter une todo');
-})
+/*************/
+/* /addTodo  */
+/*************/
 .post('/addTodo', (req, res) => {
 	checkSessionTodo(req);
 	if ((typeof (req.body.todo_input) == 'string')
@@ -48,6 +50,9 @@ app.get('/', (req, res) => {
 	res.status(200).redirect('/');
 
 })
+/************/
+/* /delTodo */
+/************/
 .get('/delTodo/:id', (req, res) => {
 	checkSessionTodo(req);
 	res.status(200).setHeader('Content-Type', 'text/html');
@@ -60,16 +65,34 @@ app.get('/', (req, res) => {
 
 	res.redirect('/');
 })
+/************/
+/* /modTodo */
+/************/
 .get('/modTodo/:id', (req, res) => {
 	checkSessionTodo(req);
 	res.status(200).setHeader('Content-Type', 'text/html');
 
 	//check if id is a correct value
-	if ((Number.isInteger(parseInt(req.params.id)))
-		&& (req.params.id < req.session.todoList.length)) {
-		res.send('<input type="text" value="' + req.session.todoList[req.params.id] + '" /><button>Valider</button><button>Annuler</button>');
+	let id = parseInt(req.params.id);
+	if (checkId(id, req.session.todoList)) {
+		res.render('modTodo.ejs', {todoList: req.session.todoList, todoId: id});
+	} else {
+		res.redirect('/');
 	}
 })
+.post('/modTodo/:id', (req, res) => {
+	checkSessionTodo(req);
+	if (checkId(req.params.id, req.session.todoList)
+		&& (typeof (req.body.todoValue) === 'string')
+		&& (req.body.todoValue !== '')) {
+			req.session.todoList[req.params.id] = req.body.todoValue;
+	}
+
+	res.redirect('/');
+})
+/**************/
+/* ELSE route */
+/**************/
 .use((req, res) => {
 	res.status(301).redirect('/');
 })
@@ -86,4 +109,14 @@ function checkSessionTodo(req) {
 	|| (!(req.session.todoList instanceof Array))) {
 		req.session.todoList = [];
 	}
+}
+
+function checkId(pId, pTodoList) {
+	if ((Number.isInteger(pId))
+		&& (pId < pTodoList.length)) {
+		return (true);
+	}
+
+	return (false);
+
 }

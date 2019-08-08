@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Modification</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <style type="text/css">
+   form {
+		display: flex;
+		justify-content: space-between;
+   }
+
+   input[type=text] {
+		width: 100%;
+   }
+  </style>
+ </head>
+ <body>
+  <form method="post" action="/modTodo/<%= todoId %>">
+   <input type="text" name="todoValue" value="<%= todoList[todoId] %>" />
+   <input type="submit" id="validate" value="Valider" />
+   <button id="cancel">Annuler</button>
+  </form>
+  <script>
+
+   window.document.querySelector('input[type=text]').select();
+   window.document.querySelector('button#validate').addEventListener('click', function () {
+   });
+ 
+   window.document.querySelector('button#cancel').addEventListener('click', function () {
+ 		window.location.href('/');
+   });
+
+  </script>
+ </body>
+</html>

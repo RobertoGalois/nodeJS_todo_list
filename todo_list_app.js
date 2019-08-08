@@ -3,6 +3,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 
 const app = express();
+
 /**********/
 /** USES **/
 /**********/
@@ -25,9 +26,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-/**********************/
-/** ROUTE management **/
-/*********************/
+/**************************/
+/**** ROUTE management ****/
+/**************************/
 
 /*****/
 /* / */
@@ -35,16 +36,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
 	checkSessionTodo(req);
 	res.status(200).setHeader('Content-Type', 'text/html');
-	res.render('index.ejs', {todoList: req.session.todoList});
+	res.render('index.ejs', { todoList : req.session.todoList });
 })
 /*************/
 /* /addTodo  */
 /*************/
 .post('/addTodo', (req, res) => {
 	checkSessionTodo(req);
-	if ((typeof (req.body.todo_input) == 'string')
-		&& (req.body.todo_input !== '')){
-		req.session.todoList.push(req.body.todo_input.substring(0,80));
+	if (checkInputTodo(req.body.todo_input)){
+		req.session.todoList.push(req.body.todo_input.trim().substring(0,80));
 	}
 
 	res.status(200).redirect('/');
@@ -57,9 +57,8 @@ app.get('/', (req, res) => {
 	checkSessionTodo(req);
 	res.status(200).setHeader('Content-Type', 'text/html');
 
-	//check if id is a correct value
-	if ((Number.isInteger(parseInt(req.params.id)))
-		&& (req.params.id < req.session.todoList.length)) {
+	let id = parseInt(req.params.id);
+	if (checkId(id, req.session.todoList)) {
 		req.session.todoList.splice(req.params.id, 1);
 	}
 
@@ -72,7 +71,6 @@ app.get('/', (req, res) => {
 	checkSessionTodo(req);
 	res.status(200).setHeader('Content-Type', 'text/html');
 
-	//check if id is a correct value
 	let id = parseInt(req.params.id);
 	if (checkId(id, req.session.todoList)) {
 		res.render('modTodo.ejs', {todoList: req.session.todoList, todoId: id});
@@ -82,11 +80,11 @@ app.get('/', (req, res) => {
 })
 .post('/modTodo/:id', (req, res) => {
 	checkSessionTodo(req);
+
 	let id = parseInt(req.params.id);
 	if (checkId(id, req.session.todoList)
-		&& (typeof (req.body.todoValue) === 'string')
-		&& (req.body.todoValue !== '')) {
-			req.session.todoList[id] = req.body.todoValue;
+		&& (checkInputTodo(req.body.todoValue))) {
+			req.session.todoList[id] = req.body.todoValue.trim().substring(0, 80);
 	}
 
 	res.redirect('/');
@@ -98,13 +96,15 @@ app.get('/', (req, res) => {
 	res.status(301).redirect('/');
 })
 
+/***************/
+/**** FINAL ****/
+/***************/
 app.listen(8080);
 
 
-
-/**************/
-/* FUNCTIONS **/
-/**************/
+/*******************/
+/**** FUNCTIONS ****/
+/*******************/
 function checkSessionTodo(req) {
 	if ((typeof (req.session.todoList) === 'undefined')
 	|| (!(req.session.todoList instanceof Array))) {
@@ -119,5 +119,13 @@ function checkId(pId, pTodoList) {
 	}
 
 	return (false);
+}
 
+function checkInputTodo(pInput) {
+	if ((typeof (pInput) === 'string')
+		&& (pInput.trim() !== '')) {
+		return (true);
+	}
+
+	return (false);
 }

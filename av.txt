@@ -2,3 +2,6 @@
   en fait, le soucis c'est que c'est un systeme a l'ancienne, ca submit et ca reload la page,
   il faudrait que tout soit géré en dynamique dans la page.
   concretement, ca charge la page
+
+- gerer les problematiques secu genre
+  mettre des trucs avec que des espaces ==> trim()

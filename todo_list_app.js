@@ -60,6 +60,16 @@ app.get('/', (req, res) => {
 
 	res.redirect('/');
 })
+.get('/modTodo/:id', (req, res) => {
+	checkSessionTodo(req);
+	res.status(200).setHeader('Content-Type', 'text/html');
+
+	//check if id is a correct value
+	if ((Number.isInteger(parseInt(req.params.id)))
+		&& (req.params.id < req.session.todoList.length)) {
+		res.send('<input type="text" value="' + req.session.todoList[req.params.id] + '" /><button>Valider</button><button>Annuler</button>');
+	}
+})
 .use((req, res) => {
 	res.status(301).redirect('/');
 })

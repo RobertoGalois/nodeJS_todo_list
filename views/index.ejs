@@ -65,6 +65,14 @@
 		});
 	}
 
+	buttons = window.document.querySelectorAll('button.mod_button');
+	for (let i = 0; i < buttons.length; i++) {
+		buttons[i].addEventListener('click', function (e) {
+			window.location.replace('/modTodo/' + e.currentTarget.id.slice(4));
+		});
+	}
+
+
   </script>
  </body>
 </html>

@@ -35,8 +35,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 /*****/
 app.get('/', (req, res) => {
 	checkSessionTodo(req);
-	res.status(200).setHeader('Content-Type', 'text/html');
+	res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8');
 	res.render('index.ejs', { todoList : req.session.todoList });
+})
+/*****************/
+/* /getTodoList  */
+/*****************/
+.get('/getTodoList', (req, res) => {
+	checkSessionTodo(req);
+	res.status(200).setHeader('Content-Type', 'application/json; charset=utf-8');
+	res.send(JSON.stringify({ todoList : req.session.todoList }));
 })
 /*************/
 /* /addTodo  */
@@ -55,7 +63,7 @@ app.get('/', (req, res) => {
 /************/
 .get('/delTodo/:id', (req, res) => {
 	checkSessionTodo(req);
-	res.status(200).setHeader('Content-Type', 'text/html');
+	res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8');
 
 	let id = parseInt(req.params.id);
 	if (checkId(id, req.session.todoList)) {
@@ -69,7 +77,7 @@ app.get('/', (req, res) => {
 /************/
 .get('/modTodo/:id', (req, res) => {
 	checkSessionTodo(req);
-	res.status(200).setHeader('Content-Type', 'text/html');
+	res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8');
 
 	let id = parseInt(req.params.id);
 	if (checkId(id, req.session.todoList)) {
@@ -108,7 +116,8 @@ app.listen(8080);
 function checkSessionTodo(req) {
 	if ((typeof (req.session.todoList) === 'undefined')
 	|| (!(req.session.todoList instanceof Array))) {
-		req.session.todoList = [];
+		//req.session.todoList = [];
+		req.session.todoList = ['moi', 'toi', 'ils'];
 	}
 }
 

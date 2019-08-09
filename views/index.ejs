@@ -12,16 +12,17 @@
    Ma Todo-List
   </header>
   <section id="todo_list">
-   <ul>
-<% for (let i = 0; i < todoList.length; i++) { %>
-   <li><%= todoList[i] %><button class="del_button" id="del_<%= i %>" title="Supprimer">X</button><button class="mod_button" id="mod_<%= i %>" title="Modifier">M</button></li>
-<% }  %>
+   <ul id="todo_list">
+   <!--
+   <li>la Todo<button class="del_button" id="del_ID" title="Supprimer">X</button><button class="mod_button" id="mod_ID" title="Modifier">M</button></li>
+   -->
    </ul>
    <form method="post" action="/addTodo">
     <input type="text" name="todo_input" id="add_entry_input" placeholder="Ajouter une tâche (80 caractères maximum)" maxlength="80" required /><input type="submit" id="add_entry_button" value="Valider" />
    </form>
   </section>
   <script>
+  <% include ./includesJS/jq.ejs %>
   <% include ./includesJS/JSIndex.ejs %>
   </script>
  </body>

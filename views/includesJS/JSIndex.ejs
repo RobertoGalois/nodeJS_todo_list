@@ -1,19 +1,64 @@
-	window.document.querySelector('#add_entry_input').focus();
-	window.document.querySelector('form').addEventListener('submit', function (e) {
-		//e.preventDefault();
-		//console.log('ok');
-	});
+function getTodoListFromServerNDo(pFunction) {
+	var retTodoList = ['foirage'];
 
-	var buttons = window.document.querySelectorAll("button.del_button");
-	for (let i = 0; i < buttons.length; i++) {
-		buttons[i].addEventListener('click', function (e) {
+	$.get('/getTodoList', function (data) {
+		pFunction(data.todoList);
+	})
+
+	return retTodoList;
+}
+
+function loadTodoListInDOM(pTodoList) {
+	for (let i = 0; i < pTodoList.length; i++) {
+		$("ul#todo_list").append('<li>' + pTodoList[i] +'<button class="del_button" id="del_' + i + '" title="Supprimer">X</button><button class="mod_button" id="mod_' + i + '" title="Modifier">M</button></li>');
+	}
+
+	setEventsButtons();
+}
+
+function clearTodoListInDOM() {
+	$('ul#todo_list').empty();
+}
+
+function reLoadTodoListInDOM(pTodoList) {
+	clearTodoListInDOM();
+	loadTodoListInDOM(pTodoList);
+}
+
+function setEventsDelButtons() {
+	$('button.del_button').each(function () {
+		this.addEventListener('click', function (e) {
 			window.location.replace('/delTodo/' + e.currentTarget.id.slice(4));
+			console.log('del');
 		});
-	}
+	});
+}
 
-	buttons = window.document.querySelectorAll('button.mod_button');
-	for (let i = 0; i < buttons.length; i++) {
-		buttons[i].addEventListener('click', function (e) {
+function setEventsModButtons() { 
+	$('button.mod_button').each(function () {
+		this.addEventListener('click', function (e) {
 			window.location.href = '/modTodo/' + e.currentTarget.id.slice(4);
-		});
-	}
+			console.log('mod');
+		});	
+	});
+}
+
+function setEventsButtons() {
+	setEventsDelButtons();
+	setEventsModButtons();
+}
+
+$(function () {
+	getTodoListFromServerNDo(loadTodoListInDOM);
+
+	//Focus on input#add_entry_input
+	$('input#add_entry_input').select();
+
+	//Manage the validation form
+	$('form').on('submit', function (e) {
+		e.preventDefault();
+		$.post('/addTodo', {todo_input : $('input#add_entry_input').val()});
+		$('input#add_entry_input').val('');
+		getTodoListFromServerNDo(reLoadTodoListInDOM);
+	})
+})

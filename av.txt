@@ -1,7 +1,17 @@
 - ca va pas au niveau du front-end 
   en fait, le soucis c'est que c'est un systeme a l'ancienne, ca submit et ca reload la page,
   il faudrait que tout soit géré en dynamique dans la page.
-  concretement, ca charge la page
+  concretement, ca charge la page avec recuperation par javascript front, de session.todoList qu'on va stocker dans une variable locale.
 
-- gerer les problematiques secu genre
-  mettre des trucs avec que des espaces ==> trim()
+  puis on va appeller une fonction loadTodoListInDom() qui va l'afficher dans la page.
+  une fois qu'on a tout ca: 
+
+  - si on ajoute une nouvelle todo
+    ca .post() pour l'add dans la session, puis ca recharge et reaffiche la liste.
+	le mieux c'est de le faire a chaque fois plutot que de juste append dans le dom, car on ne sait pas ce qui se passe sur d'autres tab avec le meme cookie de session
+
+  - si on modifie une todo, pareil
+  - si on en supprime une, pareil.
+
+
+

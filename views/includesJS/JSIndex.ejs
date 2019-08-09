@@ -10,7 +10,7 @@ function getTodoListFromServerNDo(pFunction) {
 
 function loadTodoListInDOM(pTodoList) {
 	for (let i = 0; i < pTodoList.length; i++) {
-		$("ul#todo_list").append('<li>' + pTodoList[i] +'<button class="del_button" id="del_' + i + '" title="Supprimer">X</button><button class="mod_button" id="mod_' + i + '" title="Modifier">M</button></li>');
+		$("ul#todo_list").append('<li id="todo_' + i + '"><span>' + pTodoList[i] +'</span><button class="del_button" id="del_' + i + '" title="Supprimer">X</button><button class="mod_button" id="mod_' + i + '" title="Modifier">M</button></li>');
 	}
 
 	setEventsButtons();
@@ -41,8 +41,13 @@ function setEventsDelButtons() {
 function setEventsModButtons() { 
 	$('button.mod_button').each(function () {
 		this.addEventListener('click', function (e) {
-			window.location.href = '/modTodo/' + e.currentTarget.id.slice(4);
-			console.log('mod');
+			//window.location.href = '/modTodo/' + e.currentTarget.id.slice(4);
+			let spanTodo = 	$('li#todo_' + this.id.slice(4) + ' span');
+			let inputReplace = $('<input type="text" value="POUET" />');
+
+			spanTodo.replaceWith(inputReplace);
+			inputReplace.select();
+			console.log($('li#todo_' + this.id.slice(4) + ' span'));
 		});	
 	});
 }

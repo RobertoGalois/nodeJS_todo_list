@@ -41,7 +41,7 @@ app.get('/', (req, res) => {
 /*****************/
 /* /getTodoList  */
 /*****************/
-.get('/getTodoList', (req, res) => {
+.post('/getTodoList', (req, res) => {
 	checkSessionTodo(req);
 	res.status(200).setHeader('Content-Type', 'application/json; charset=utf-8');
 	res.send(JSON.stringify({ todoList : req.session.todoList }));
@@ -61,13 +61,13 @@ app.get('/', (req, res) => {
 /************/
 /* /delTodo */
 /************/
-.get('/delTodo/:id', (req, res) => {
+.post('/delTodo/', (req, res) => {
 	checkSessionTodo(req);
 	res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8');
 
-	let id = parseInt(req.params.id);
+	let id = parseInt(req.body.id);
 	if (checkId(id, req.session.todoList)) {
-		req.session.todoList.splice(req.params.id, 1);
+		req.session.todoList.splice(id, 1);
 	}
 
 	res.redirect('/');
@@ -116,8 +116,7 @@ app.listen(8080);
 function checkSessionTodo(req) {
 	if ((typeof (req.session.todoList) === 'undefined')
 	|| (!(req.session.todoList instanceof Array))) {
-		//req.session.todoList = [];
-		req.session.todoList = ['moi', 'toi', 'ils'];
+		req.session.todoList = [];
 	}
 }
 

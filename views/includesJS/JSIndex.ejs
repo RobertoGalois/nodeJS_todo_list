@@ -1,7 +1,7 @@
 function getTodoListFromServerNDo(pFunction) {
 	var retTodoList = ['foirage'];
 
-	$.get('/getTodoList', function (data) {
+	$.post('/getTodoList', function (data) {
 		pFunction(data.todoList);
 	})
 
@@ -27,9 +27,13 @@ function reLoadTodoListInDOM(pTodoList) {
 
 function setEventsDelButtons() {
 	$('button.del_button').each(function () {
-		this.addEventListener('click', function (e) {
-			window.location.replace('/delTodo/' + e.currentTarget.id.slice(4));
-			console.log('del');
+		this.addEventListener('click', function () {
+			//post delete
+			$.post('/delTodo/', {id : this.id.slice(4)});
+
+			//reload
+			getTodoListFromServerNDo(reLoadTodoListInDOM);
+
 		});
 	});
 }

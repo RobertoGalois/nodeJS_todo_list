@@ -7,7 +7,7 @@ body {
 	list-style-type: square;
   }
 
-  ul button {
+  li button {
 	float: right;
   }
 
@@ -18,6 +18,15 @@ body {
 
   li:last-child {
 	border-bottom: black 1px solid;
+  }
+
+  li.todo form {
+	display: flex;
+	justify-content: space-between;
+  }
+
+  li.todo input[type=text] {
+	width: 100%;
   }
 
   form {

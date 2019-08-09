@@ -86,10 +86,10 @@ app.get('/', (req, res) => {
 		res.redirect('/');
 	}
 })
-.post('/modTodo/:id', (req, res) => {
+.post('/modTodo/', (req, res) => {
 	checkSessionTodo(req);
 
-	let id = parseInt(req.params.id);
+	let id = parseInt(req.body.id);
 	if (checkId(id, req.session.todoList)
 		&& (checkInputTodo(req.body.todoValue))) {
 			req.session.todoList[id] = req.body.todoValue.trim().substring(0, 80);

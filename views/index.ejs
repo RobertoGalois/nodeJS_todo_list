@@ -22,27 +22,7 @@
    </form>
   </section>
   <script>
-   window.document.querySelector('#add_entry_input').focus();
-   window.document.querySelector('form').addEventListener('submit', function (e) {
-		//e.preventDefault();
-		//console.log('ok');
-   });
-
-	var buttons = window.document.querySelectorAll("button.del_button");
-	for (let i = 0; i < buttons.length; i++) {
-		buttons[i].addEventListener('click', function (e) {
-			window.location.replace('/delTodo/' + e.currentTarget.id.slice(4));
-		});
-	}
-
-	buttons = window.document.querySelectorAll('button.mod_button');
-	for (let i = 0; i < buttons.length; i++) {
-		buttons[i].addEventListener('click', function (e) {
-			window.location.href = '/modTodo/' + e.currentTarget.id.slice(4);
-		});
-	}
-
-
+  <% include ./includesJS/JSIndex.ejs %>
   </script>
  </body>
 </html>

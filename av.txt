@@ -1,9 +1,3 @@
-- ca va pas au niveau du front-end 
-  en fait, le soucis c'est que c'est un systeme a l'ancienne, ca submit et ca reload la page,
-  il faudrait que tout soit géré en dynamique dans la page.
-  concretement, ca charge la page avec recuperation par javascript front, de session.todoList qu'on va stocker dans une variable locale.
-
-  - si on modifie une todo, pareil
-
-
-
+- reverifier les routes pour que tout soit secure
+- remettre des puces
+- rendre le code beaucoup plus propre

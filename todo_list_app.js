@@ -1,6 +1,8 @@
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const entities = require('html-entities').XmlEntities; 
+const fs = require('fs');
 
 const app = express();
 
@@ -52,7 +54,7 @@ app.get('/', (req, res) => {
 .post('/addTodo', (req, res) => {
 	checkSessionTodo(req);
 	if (checkInputTodo(req.body.todo_input)){
-		req.session.todoList.push(req.body.todo_input.trim().substring(0,80));
+		req.session.todoList.push(entities.encode(req.body.todo_input.trim().substring(0,80)));
 	}
 
 	res.status(200).redirect('/');
@@ -75,27 +77,20 @@ app.get('/', (req, res) => {
 /************/
 /* /modTodo */
 /************/
-.get('/modTodo/:id', (req, res) => {
-	checkSessionTodo(req);
-	res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8');
-
-	let id = parseInt(req.params.id);
-	if (checkId(id, req.session.todoList)) {
-		res.render('modTodo.ejs', {todoList: req.session.todoList, todoId: id});
-	} else {
-		res.redirect('/');
-	}
-})
 .post('/modTodo/', (req, res) => {
 	checkSessionTodo(req);
 
-	let id = parseInt(req.body.id);
+	let id = parseInt(req.body.todoId);
 	if (checkId(id, req.session.todoList)
 		&& (checkInputTodo(req.body.todoValue))) {
-			req.session.todoList[id] = req.body.todoValue.trim().substring(0, 80);
+			req.session.todoList[id] = entities.encode(req.body.todoValue.trim().substring(0, 80));
 	}
 
 	res.redirect('/');
+})
+.get('/imgs/list.png', (req, res) => {
+	res.status(200).setHeader('Content-Type', 'image/png');
+	res.send(fs.readFileSync('./views/imgs/list.png'));
 })
 /**************/
 /* ELSE route */
@@ -130,7 +125,7 @@ function checkId(pId, pTodoList) {
 }
 
 function checkInputTodo(pInput) {
-	if ((typeof (pInput) === 'string')
+	if ((typeof (pInput) === typeof ('pouet'))
 		&& (pInput.trim() !== '')) {
 		return (true);
 	}

@@ -1,42 +1,89 @@
 /*
+** TempContentsContainer: a JQuery element to stock others JQuery elements
+** by .append() them into it
+*/
+const tempContentsContainer = $('<div>')
+
+/*
 ** switch function to know if front is in a todo modification process
 ** I prefer using this way instead of a global variable, not sure that is
 ** prettier but well, we'll see.
+** id = id of the field being modifing
 */
-const isThereModifying = (function (pBool)
+const whoIsModifying = (function (id)
 {
-	let myStaticVar = false;
-	
-	return function (pBool) {
+	let myStaticVar = -1;
+
+	return function (id) {
 	    //if there is a parameter passed in the function, we give it the new value, else, it keep its value
-		if(typeof (pBool) === typeof (false)) {
-			myStaticVar = pBool;
+		if(typeof (id) === typeof(myStaticVar)) {
+			myStaticVar = id;
 		}
 		
 		return (myStaticVar);
 	};
 })();
 
+/*
+** function with static variable to stock the todoList from back to front
+** and get it from front
+*/
+const getTodoList = (function (pTodoList) {
+	let staticTodoList = [];
+
+	return (function (pTodoList) {
+		if(typeof (pTodoList) === typeof(staticTodoList)) {
+			staticTodoList = pTodoList;
+		}
+
+		return staticTodoList;
+	});
+})();
+
+/*
+** give the focus on the main add_todo <input> and select its content
+*/
 function selectAddEntryInput() {
 	$('#add_entry_input').select();
 }
 
+/*
+** get the todoList form the server by post protocol, 
+** save it in the getTodolist() function and
+** call pFunction while passing the todoList in argument
+*/
 function getTodoListFromServerNDo(pFunction) {
-	let retTodoList = [];
-
 	$.post('/getTodoList', function (data) {
+		getTodoList(data.todoList);
 		pFunction(data.todoList);
 	})
+}
 
-	return retTodoList;
+/*
+** take a $('<li>') JQuery Element and append() it a formatted todo
+*/
+function loadTodoInLi(pLiEl, pTodo) {
+	indx = parseInt(pLiEl.attr('id').slice(5));
+	pLiEl.append($('<img src="/imgs/list.png" /><span id="span_' + indx + '">' + pTodo + '</span><button class="mod_button" id="mod_' + indx + '" title="Modifier">M</button><button class="del_button" id="del_' + indx + '" title="Supprimer">X</button>'));
 }
 
 function loadTodoListInDOM(pTodoList) {
 	for (let i = 0; i < pTodoList.length; i++) {
-		$("ul#todo_list").append('<li class="todo" id="todo_' + i + '"><span>' + pTodoList[i] +'</span><button class="del_button" id="del_' + i + '" title="Supprimer">X</button><button class="mod_button" id="mod_' + i + '" title="Modifier">M</button></li>');
+		$("ul#todo_list").append('<li class="todo" id="todo_' + i + '"></li>');
+		loadTodoInLi($('li#todo_' + i), pTodoList[i]);
 	}
 
 	setEventsButtons();
+	$('li.todo span').click(function (e) {
+		$('li#todo_' + e.currentTarget.id.slice(5) + ' button.mod_button').click();
+	})
+
+	selectAddEntryInput();
+
+	/*
+	** nothing is being modifiying
+	*/
+	whoIsModifying(-1);
 }
 
 function clearTodoListInDOM() {
@@ -46,42 +93,82 @@ function clearTodoListInDOM() {
 function reLoadTodoListInDOM(pTodoList) {
 	clearTodoListInDOM();
 	loadTodoListInDOM(pTodoList);
-	selectAddEntryInput();
 }
 
 function setEventsDelButtons() {
 	$('button.del_button').each(function () {
 		this.addEventListener('click', function () {
-			//post delete
 			$.post('/delTodo/', {id : this.id.slice(4)});
-
-			//reload
 			getTodoListFromServerNDo(reLoadTodoListInDOM);
 		});
 	});
 }
 
+/*
+** take an $('<input type="text">') element and if we press enter, it submits the form
+*/
+function setEnterMeanSend(inputEl, sendEl) {
+	inputEl.keydown(function (e) {
+		if(e.which === 13) {
+			sendEl.click();
+		}
+	});	
+}
 
+/*
+** what to do when we click on a "Modifier" button
+*/
 function setEventsModButtons() { 
 	$('button.mod_button').each(function () {
 		this.addEventListener('click', function (e) {
-			//window.location.href = '/modTodo/' + e.currentTarget.id.slice(4);
-			let id = this.id.slice(4);
-			let spanTodo = 	$('li#todo_' + id + ' span');
+
+			if (whoIsModifying() !== -1) {
+				//unset field who is in modifying
+				$('li#todo_' + whoIsModifying() + ' form').remove();
+				$('li#todo_' + whoIsModifying()).append(tempContentsContainer.find('span'));
+				$('li#todo_' + whoIsModifying()).append(tempContentsContainer.find('button[class=mod_button]'));
+				$('li#todo_' + whoIsModifying()).append(tempContentsContainer.find('button[class=del_button]'));
+			}
+
+			let id = parseInt(this.id.slice(4));
+			let spanTodo = 	$('li#todo_' + id + ' span[id=span_' + id + ']');
 			let formReplace = $('<form method="post" action="/"><input type="text" name="todoValue" value="' + spanTodo.text() + '" placeholder="(80 caractères maximum)" maxlength="80" required /><input type="submit" value="OK" title="Valider" /><button title="Annuler">NO</button></form>');
 
-			$('li#todo_' + id + ' button.mod_button').remove();
-			$('li#todo_' + id + ' button.del_button').remove();
-			spanTodo.replaceWith(formReplace);
+			whoIsModifying(id);
+			tempContentsContainer.append($('li#todo_' + id + ' span'));
+			tempContentsContainer.append($('li#todo_' + id + ' button.mod_button'));
+			tempContentsContainer.append($('li#todo_' + id + ' button.del_button'));
+
+			$('li#todo_' + id).append(formReplace);
 			$('li#todo_' + id + ' input[type=text]').select();
+			setEnterMeanSend($('li#todo_' + id + ' input[type=text]'), $('li#todo_' + id + ' input[type=submit]'));
+
+			/*
+			** when user click on NO button
+			*/
 			$('li#todo_' + id + ' button').click(function (e) {
 				e.preventDefault();
 				getTodoListFromServerNDo(reLoadTodoListInDOM);
+				tempContentsContainer.empty();
 			});
 
+			/*
+			** press escape do the same as click on NO button
+			*/
+			$('li#todo_' + id + ' input[type=text]').keydown(function (e) {
+				if(e.which === 27) {
+					$('li#todo_' + id + ' button').click();
+				}
+			});
+
+			$('li#todo_' + id + ' input[type=text]').select();
+
+			/*
+			** when user validates entry
+			*/
 			$('li#todo_' + id + ' form').on('submit', function (e) {
 				e.preventDefault();
-				$.post('/modTodo/', {todoValue: $('li#todo_' + id + 'input[type=text]').val(), todoId: id});
+				$.post('/modTodo/', { todoValue: $('li#todo_' + id + ' input[type=text]').val(), todoId: id });
 				getTodoListFromServerNDo(reLoadTodoListInDOM);
 			})
 		});	
@@ -93,17 +180,21 @@ function setEventsButtons() {
 	setEventsModButtons();
 }
 
+/****************/
+/***   MAIN   ***/
+/****************/
 $(function () {
 	getTodoListFromServerNDo(loadTodoListInDOM);
-
-	//Focus on input#add_entry_input
 	selectAddEntryInput();
-	//Manage the validation form
+
+	/*
+	** Manage the validation form
+	*/
 	$('form').on('submit', function (e) {
 		e.preventDefault();
-		$.post('/addTodo', {todo_input : $('input#add_entry_input').val()});
+		$.post('/addTodo', { todo_input : $('input#add_entry_input').val() });
 		$('input#add_entry_input').val('');
 		getTodoListFromServerNDo(reLoadTodoListInDOM);
 		selectAddEntryInput();
-	})
+	});
 })

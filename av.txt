@@ -1,3 +1,0 @@
-- reverifier les routes pour que tout soit secure
-- remettre des puces
-- rendre le code beaucoup plus propre
